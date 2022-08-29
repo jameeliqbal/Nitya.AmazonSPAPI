@@ -35,6 +35,8 @@ Partial Class Form1
         Me.cmbFulfillmentNetwork = New System.Windows.Forms.ComboBox()
         Me.dtpCreatedAfter = New System.Windows.Forms.DateTimePicker()
         Me.dgvOrders = New System.Windows.Forms.DataGridView()
+        Me.btnGetOrder = New System.Windows.Forms.Button()
+        Me.ctbGetOrder = New System.Windows.Forms.TextBox()
         CType(Me.dgvOrders, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -69,7 +71,7 @@ Partial Class Form1
         '
         Me.lblStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblStatus.AutoSize = True
-        Me.lblStatus.Location = New System.Drawing.Point(474, 172)
+        Me.lblStatus.Location = New System.Drawing.Point(38, 165)
         Me.lblStatus.Name = "lblStatus"
         Me.lblStatus.Size = New System.Drawing.Size(69, 13)
         Me.lblStatus.TabIndex = 34
@@ -80,7 +82,7 @@ Partial Class Form1
         Me.cmbOrderStatus.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmbOrderStatus.FormattingEnabled = True
         Me.cmbOrderStatus.Items.AddRange(New Object() {"All", "Pending Availability", "Pending", "Unshipped", "Partially Shipped", "Shipped", "Invoice Unconfirmed", "Canceled", "Unfulfillable"})
-        Me.cmbOrderStatus.Location = New System.Drawing.Point(549, 169)
+        Me.cmbOrderStatus.Location = New System.Drawing.Point(113, 162)
         Me.cmbOrderStatus.Name = "cmbOrderStatus"
         Me.cmbOrderStatus.Size = New System.Drawing.Size(200, 21)
         Me.cmbOrderStatus.TabIndex = 33
@@ -89,7 +91,7 @@ Partial Class Form1
         '
         Me.lblMarketplace.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblMarketplace.AutoSize = True
-        Me.lblMarketplace.Location = New System.Drawing.Point(474, 91)
+        Me.lblMarketplace.Location = New System.Drawing.Point(38, 84)
         Me.lblMarketplace.Name = "lblMarketplace"
         Me.lblMarketplace.Size = New System.Drawing.Size(69, 13)
         Me.lblMarketplace.TabIndex = 32
@@ -100,7 +102,7 @@ Partial Class Form1
         Me.cmbMarketplace.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmbMarketplace.FormattingEnabled = True
         Me.cmbMarketplace.Items.AddRange(New Object() {"All", "Pending Availability", "Pending", "Unshipped", "Partially Shipped", "Shipped", "Invoice Unconfirmed", "Canceled", "Unfulfillable"})
-        Me.cmbMarketplace.Location = New System.Drawing.Point(549, 88)
+        Me.cmbMarketplace.Location = New System.Drawing.Point(113, 81)
         Me.cmbMarketplace.Name = "cmbMarketplace"
         Me.cmbMarketplace.Size = New System.Drawing.Size(200, 21)
         Me.cmbMarketplace.TabIndex = 31
@@ -108,7 +110,7 @@ Partial Class Form1
         'btnGetOrders
         '
         Me.btnGetOrders.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnGetOrders.Location = New System.Drawing.Point(549, 59)
+        Me.btnGetOrders.Location = New System.Drawing.Point(113, 52)
         Me.btnGetOrders.Name = "btnGetOrders"
         Me.btnGetOrders.Size = New System.Drawing.Size(200, 23)
         Me.btnGetOrders.TabIndex = 30
@@ -119,7 +121,7 @@ Partial Class Form1
         '
         Me.lblCreatedAfter.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblCreatedAfter.AutoSize = True
-        Me.lblCreatedAfter.Location = New System.Drawing.Point(437, 147)
+        Me.lblCreatedAfter.Location = New System.Drawing.Point(1, 140)
         Me.lblCreatedAfter.Name = "lblCreatedAfter"
         Me.lblCreatedAfter.Size = New System.Drawing.Size(106, 13)
         Me.lblCreatedAfter.TabIndex = 29
@@ -129,7 +131,7 @@ Partial Class Form1
         '
         Me.lblFulfillmentNetwork.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFulfillmentNetwork.AutoSize = True
-        Me.lblFulfillmentNetwork.Location = New System.Drawing.Point(444, 118)
+        Me.lblFulfillmentNetwork.Location = New System.Drawing.Point(8, 111)
         Me.lblFulfillmentNetwork.Name = "lblFulfillmentNetwork"
         Me.lblFulfillmentNetwork.Size = New System.Drawing.Size(99, 13)
         Me.lblFulfillmentNetwork.TabIndex = 28
@@ -140,7 +142,7 @@ Partial Class Form1
         Me.cmbFulfillmentNetwork.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmbFulfillmentNetwork.FormattingEnabled = True
         Me.cmbFulfillmentNetwork.Items.AddRange(New Object() {"Amazon and Merchant Fulfillment Networks", "Amazon Fulfillment Network", "Merchant Fulfillment Network"})
-        Me.cmbFulfillmentNetwork.Location = New System.Drawing.Point(549, 115)
+        Me.cmbFulfillmentNetwork.Location = New System.Drawing.Point(113, 108)
         Me.cmbFulfillmentNetwork.Name = "cmbFulfillmentNetwork"
         Me.cmbFulfillmentNetwork.Size = New System.Drawing.Size(200, 21)
         Me.cmbFulfillmentNetwork.TabIndex = 27
@@ -148,7 +150,7 @@ Partial Class Form1
         'dtpCreatedAfter
         '
         Me.dtpCreatedAfter.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.dtpCreatedAfter.Location = New System.Drawing.Point(549, 143)
+        Me.dtpCreatedAfter.Location = New System.Drawing.Point(113, 136)
         Me.dtpCreatedAfter.Name = "dtpCreatedAfter"
         Me.dtpCreatedAfter.Size = New System.Drawing.Size(200, 20)
         Me.dtpCreatedAfter.TabIndex = 26
@@ -159,17 +161,36 @@ Partial Class Form1
         Me.dgvOrders.AllowUserToDeleteRows = False
         Me.dgvOrders.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells
         Me.dgvOrders.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.dgvOrders.Location = New System.Drawing.Point(0, 240)
+        Me.dgvOrders.Location = New System.Drawing.Point(0, 416)
         Me.dgvOrders.Name = "dgvOrders"
         Me.dgvOrders.RowHeadersVisible = False
-        Me.dgvOrders.Size = New System.Drawing.Size(1244, 429)
+        Me.dgvOrders.Size = New System.Drawing.Size(1244, 253)
         Me.dgvOrders.TabIndex = 38
+        '
+        'btnGetOrder
+        '
+        Me.btnGetOrder.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnGetOrder.Location = New System.Drawing.Point(419, 52)
+        Me.btnGetOrder.Name = "btnGetOrder"
+        Me.btnGetOrder.Size = New System.Drawing.Size(200, 23)
+        Me.btnGetOrder.TabIndex = 40
+        Me.btnGetOrder.Text = "Get Single Order"
+        Me.btnGetOrder.UseVisualStyleBackColor = True
+        '
+        'ctbGetOrder
+        '
+        Me.ctbGetOrder.Location = New System.Drawing.Point(419, 82)
+        Me.ctbGetOrder.Name = "ctbGetOrder"
+        Me.ctbGetOrder.Size = New System.Drawing.Size(200, 20)
+        Me.ctbGetOrder.TabIndex = 41
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1244, 669)
+        Me.Controls.Add(Me.ctbGetOrder)
+        Me.Controls.Add(Me.btnGetOrder)
         Me.Controls.Add(Me.dgvOrders)
         Me.Controls.Add(Me.lblTokens)
         Me.Controls.Add(Me.lblFilteredOrders)
@@ -204,4 +225,6 @@ Partial Class Form1
     Friend WithEvents cmbFulfillmentNetwork As ComboBox
     Friend WithEvents dtpCreatedAfter As DateTimePicker
     Friend WithEvents dgvOrders As DataGridView
+    Friend WithEvents btnGetOrder As Button
+    Friend WithEvents ctbGetOrder As TextBox
 End Class

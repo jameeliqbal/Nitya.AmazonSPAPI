@@ -6,6 +6,79 @@ Imports RestSharp
 Public Class Form1
     Private settings As Common.Models.Settings
 
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Load Settings
+        Dim json As String = File.ReadAllText(Path.Combine(Application.StartupPath, "Settings.json"))
+        settings = JsonConvert.DeserializeObject(Of Common.Models.Settings)(json)
+
+        ' Setup the form.
+        cmbMarketplace.SelectedIndex = 0
+        cmbFulfillmentNetwork.SelectedIndex = 0
+        dtpCreatedAfter.Value = DateTime.Now.AddDays(-5)
+        cmbOrderStatus.SelectedIndex = 3
+
+        'UseRequestToken(False)
+    End Sub
+
+    Private Sub btnGetOrder_Click(sender As Object, e As EventArgs) Handles btnGetOrder.Click
+        Dim orderID = ctbGetOrder.Text.Trim()
+        If String.IsNullOrEmpty(orderID) Then
+            MessageBox.Show("Enter a Order Number")
+            Return
+        End If
+
+        Dim resource As String = "/orders/v0/orders/" & orderID '& "/buyerInfo"
+        Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+
+        Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+
+        Dim credentials = New Models.SellerApiCredentials With {
+                .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
+                .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+                .RefreshToken = settings.Amazon.Credentials.RefreshToken,
+                .AWSKey = settings.Amazon.Credentials.AccessKeyId,
+                .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+                .RoleARN = settings.Amazon.Credentials.RoleArn
+            }
+
+        request = Classes.Signing.SignWithAccessToken(request, credentials.LWA_App_ClientId, credentials.LWA_App_ClientSecret, credentials.RefreshToken)
+        request = Classes.Signing.SignWithSTSKeysAndSecurityTokenn(request, client.BaseUrl.Host, credentials.RoleARN, credentials.AWSKey, credentials.AWSSecret)
+
+        Dim response = New RestResponse
+        Try
+
+            response = client.Execute(request)
+            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
+                'UseRequestToken(False)
+                response = client.Execute(request)
+            End While
+            'UseRequestToken(True, response.Headers.ToList().Find(Function(x) x.Name = "x-amzn-RateLimit-Limit").Value)
+
+            Select Case response.StatusCode
+                Case System.Net.HttpStatusCode.OK
+                    ' Received a 200 response from the Amazon Selling Partner API.
+                    Common.Logging.WriteToLog("INFO", "AMAZON API", "Successfully retrieved buyer information for Amazon order ID " & orderID & ".")
+                Case System.Net.HttpStatusCode.Forbidden
+                    ' Received a 403 response from the Amazon Selling Partner API.
+                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Received a 403 response when trying to retrieve the order's buyer information for Amazon order ID " & orderID & ".")
+                Case Else
+                    ' Received a differing response from those covered above.
+                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Recieved a bad response code when trying to retrieve the order's buyer information for Amazon order ID " & orderID & "." & response.StatusCode & ": " & response.StatusDescription)
+            End Select
+
+        Catch ex As Exception
+            ' If this is hit switch status to red.
+            Common.Logging.WriteToLog("ERROR", "APPLICATION", "Was unable to connect to the Amazon Selling Partner API while trying to retrieve the order's buyer information for Amazon order ID " & orderID & ". " & ex.Message)
+        End Try
+
+        ' Create the Orders object.
+        Dim order As Common.Models.Amzn.Orders.GetOrderResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderResponse)(response.Content)
+
+        dgvOrders.Rows.Clear()
+        dgvOrders.Rows.Add(New String() {False, order.Payload.AmazonOrderId, order.Payload.FulfillmentChannel, order.Payload.OrderStatus, Nothing, order.Payload.PurchaseDate, order.Payload.ShipmentServiceLevelCategory})
+
+    End Sub
+
     Private Sub btnGetOrders_Click(sender As Object, e As EventArgs) Handles btnGetOrders.Click
         ' Create OrderStatuses array.
         Dim status As String = Nothing
@@ -68,10 +141,10 @@ Public Class Form1
         Try
             response = client.Execute(request)
             While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
-                UseRequestToken(False)
+                'UseRequestToken(False)
                 response = client.Execute(request)
             End While
-            UseRequestToken(True, response.Headers.ToList().Find(Function(x) x.Name = "x-amzn-RateLimit-Limit").Value)
+            'UseRequestToken(True, response.Headers.ToList().Find(Function(x) x.Name = "x-amzn-RateLimit-Limit").Value)
 
 
             Select Case response.StatusCode
@@ -142,18 +215,18 @@ Public Class Form1
         dgvOrders.Columns.Add("Status", "Order Status")
         dgvOrders.Columns.Add("BuyerName", "Buyer Name")
         dgvOrders.Columns.Add("PurchaseDate", "Purchase Date")
-        'dgvOrders.Columns.Add("DeliveryDate", "DeliveryDate")
+        dgvOrders.Columns.Add("DeliveryDate", "DeliveryDate")
         dgvOrders.Columns.Add("ShippingMethod", "Shipping Method")
-        'dgvOrders.Columns.Add("ShippingFirstName", "Shipping First Name")
-        'dgvOrders.Columns.Add("ShippingLastName", "Shipping Last Name")
-        'dgvOrders.Columns.Add("ShippingAddress1", "Shipping Address 1")
-        'dgvOrders.Columns.Add("ShippingAddress2", "Shipping Address 2")
-        'dgvOrders.Columns.Add("ShippingCity", "Shipping City")
-        'dgvOrders.Columns.Add("ShippingState", "Shipping State")
-        'dgvOrders.Columns.Add("ShippingCountry", "Shipping Country")
-        'dgvOrders.Columns.Add("ShippingZipCode", "Shipping Zip Code")
-        'dgvOrders.Columns.Add("ShippingPhone", "Shipping Phone Number")
-        'dgvOrders.Columns.Add("ShippingExtention", "Shipping Extension")
+        dgvOrders.Columns.Add("ShippingFirstName", "Shipping First Name")
+        dgvOrders.Columns.Add("ShippingLastName", "Shipping Last Name")
+        dgvOrders.Columns.Add("ShippingAddress1", "Shipping Address 1")
+        dgvOrders.Columns.Add("ShippingAddress2", "Shipping Address 2")
+        dgvOrders.Columns.Add("ShippingCity", "Shipping City")
+        dgvOrders.Columns.Add("ShippingState", "Shipping State")
+        dgvOrders.Columns.Add("ShippingCountry", "Shipping Country")
+        dgvOrders.Columns.Add("ShippingZipCode", "Shipping Zip Code")
+        dgvOrders.Columns.Add("ShippingPhone", "Shipping Phone Number")
+        dgvOrders.Columns.Add("ShippingExtention", "Shipping Extension")
 
         ' Autosize the columns.
         For i As Integer = 0 To dgvOrders.ColumnCount - 1
@@ -285,19 +358,8 @@ Public Class Form1
         Application.DoEvents()
     End Sub
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Load Settings
-        Dim json As String = File.ReadAllText(Path.Combine(Application.StartupPath, "Settings.json"))
-        settings = JsonConvert.DeserializeObject(Of Common.Models.Settings)(json)
 
-        ' Setup the form.
-        cmbMarketplace.SelectedIndex = 0
-        cmbFulfillmentNetwork.SelectedIndex = 0
-        dtpCreatedAfter.Value = DateTime.Now.AddDays(-5)
-        cmbOrderStatus.SelectedIndex = 3
 
-        UseRequestToken(False)
-    End Sub
 
 #End Region
 End Class
