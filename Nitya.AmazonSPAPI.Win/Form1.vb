@@ -21,63 +21,37 @@ Public Class Form1
     End Sub
 
     Private Sub btnGetOrder_Click(sender As Object, e As EventArgs) Handles btnGetOrder.Click
+
         Dim orderID = ctbGetOrder.Text.Trim()
         If String.IsNullOrEmpty(orderID) Then
             MessageBox.Show("Enter a Order Number")
             Return
         End If
 
-        Dim resource As String = "/orders/v0/orders/" & orderID '& "/buyerInfo"
+        Cursor = Cursors.WaitCursor
+        Dim resource As String = "/orders/v0/orders/" & orderID
         Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+        Dim credentials = New Models.SellerApiCredentials()
+        Dim client As RestClient = GetClient(credentials, request)
 
-        Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+        'get the order
+        Dim response = GetResponse(client, request, orderID)
 
-        Dim credentials = New Models.SellerApiCredentials With {
-                .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
-                .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
-                .RefreshToken = settings.Amazon.Credentials.RefreshToken,
-                .AWSKey = settings.Amazon.Credentials.AccessKeyId,
-                .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
-                .RoleARN = settings.Amazon.Credentials.RoleArn
-            }
-
-        request = Classes.Signing.SignWithAccessToken(request, credentials.LWA_App_ClientId, credentials.LWA_App_ClientSecret, credentials.RefreshToken)
-        request = Classes.Signing.SignWithSTSKeysAndSecurityTokenn(request, client.BaseUrl.Host, credentials.RoleARN, credentials.AWSKey, credentials.AWSSecret)
-
-        Dim response = New RestResponse
-        Try
-
-            response = client.Execute(request)
-            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
-                'UseRequestToken(False)
-                response = client.Execute(request)
-            End While
-            'UseRequestToken(True, response.Headers.ToList().Find(Function(x) x.Name = "x-amzn-RateLimit-Limit").Value)
-
-            Select Case response.StatusCode
-                Case System.Net.HttpStatusCode.OK
-                    ' Received a 200 response from the Amazon Selling Partner API.
-                    Common.Logging.WriteToLog("INFO", "AMAZON API", "Successfully retrieved buyer information for Amazon order ID " & orderID & ".")
-                Case System.Net.HttpStatusCode.Forbidden
-                    ' Received a 403 response from the Amazon Selling Partner API.
-                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Received a 403 response when trying to retrieve the order's buyer information for Amazon order ID " & orderID & ".")
-                Case Else
-                    ' Received a differing response from those covered above.
-                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Recieved a bad response code when trying to retrieve the order's buyer information for Amazon order ID " & orderID & "." & response.StatusCode & ": " & response.StatusDescription)
-            End Select
-
-        Catch ex As Exception
-            ' If this is hit switch status to red.
-            Common.Logging.WriteToLog("ERROR", "APPLICATION", "Was unable to connect to the Amazon Selling Partner API while trying to retrieve the order's buyer information for Amazon order ID " & orderID & ". " & ex.Message)
-        End Try
-
-        ' Create the Orders object.
+        ' Create the Order object.
         Dim order As Common.Models.Amzn.Orders.GetOrderResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderResponse)(response.Content)
 
-        dgvOrders.Rows.Clear()
+        'list order in gridview
+        If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.Rows.Clear()
+        Else
+            BuildDataGridView()
+        End If
+
         dgvOrders.Rows.Add(New String() {False, order.Payload.AmazonOrderId, order.Payload.FulfillmentChannel, order.Payload.OrderStatus, Nothing, order.Payload.PurchaseDate, order.Payload.ShipmentServiceLevelCategory})
 
+        Cursor = Cursors.Default
     End Sub
+
 
     Private Sub btnGetOrders_Click(sender As Object, e As EventArgs) Handles btnGetOrders.Click
         ' Create OrderStatuses array.
@@ -113,7 +87,7 @@ Public Class Form1
             Case "Merchant Fulfillment Network"
                 channels = "MFN"
         End Select
-
+        Cursor = Cursors.WaitCursor
         ' Create the request.
         Dim resource As String = "/orders/v0/orders"
         Dim request As IRestRequest = New RestRequest(resource, Method.GET)
@@ -204,42 +178,8 @@ Public Class Form1
         End If
 
 
-        ' Build the DataGridView.
-        Dim chk As New DataGridViewCheckBoxColumn()
-        chk.Name = "Import"
-        chk.HeaderText = "Import"
 
-        dgvOrders.Columns.Add(chk)
-        dgvOrders.Columns.Add("AmazonOrderId", "Amazon Order ID")
-        dgvOrders.Columns.Add("FulfillmentNetwork", "Fulfillment Network")
-        dgvOrders.Columns.Add("Status", "Order Status")
-        dgvOrders.Columns.Add("BuyerName", "Buyer Name")
-        dgvOrders.Columns.Add("PurchaseDate", "Purchase Date")
-        dgvOrders.Columns.Add("DeliveryDate", "DeliveryDate")
-        dgvOrders.Columns.Add("ShippingMethod", "Shipping Method")
-        dgvOrders.Columns.Add("ShippingFirstName", "Shipping First Name")
-        dgvOrders.Columns.Add("ShippingLastName", "Shipping Last Name")
-        dgvOrders.Columns.Add("ShippingAddress1", "Shipping Address 1")
-        dgvOrders.Columns.Add("ShippingAddress2", "Shipping Address 2")
-        dgvOrders.Columns.Add("ShippingCity", "Shipping City")
-        dgvOrders.Columns.Add("ShippingState", "Shipping State")
-        dgvOrders.Columns.Add("ShippingCountry", "Shipping Country")
-        dgvOrders.Columns.Add("ShippingZipCode", "Shipping Zip Code")
-        dgvOrders.Columns.Add("ShippingPhone", "Shipping Phone Number")
-        dgvOrders.Columns.Add("ShippingExtention", "Shipping Extension")
-
-        ' Autosize the columns.
-        For i As Integer = 0 To dgvOrders.ColumnCount - 1
-            dgvOrders.Columns(i).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
-        Next
-
-        ' Turn off ReadOnly on the Import column.
-        dgvOrders.ReadOnly = False
-        For Each dgvc As DataGridViewColumn In dgvOrders.Columns
-            dgvc.ReadOnly = True
-        Next
-        dgvOrders.Columns("Import").ReadOnly = False
-
+        BuildDataGridView()
         ' Insert rows into the DataGridView
         For Each order As Common.Models.Amzn.Orders.Order In filteredOrders.Payload.Orders
 
@@ -294,11 +234,52 @@ Public Class Form1
 
 
             dgvOrders.Rows.Add(New String() {False, order.AmazonOrderId, order.FulfillmentChannel, order.OrderStatus, buyer.Payload.BuyerName, order.PurchaseDate, order.ShipmentServiceLevelCategory})
+            Application.DoEvents()
         Next
 
+        Cursor = Cursors.Default
     End Sub
 
+
 #Region "Private Methods"
+    Private Sub BuildDataGridView()
+        ' Build the DataGridView.
+        Dim chk As New DataGridViewCheckBoxColumn()
+        chk.Name = "Import"
+        chk.HeaderText = "Import"
+
+        dgvOrders.Columns.Add(chk)
+        dgvOrders.Columns.Add("AmazonOrderId", "Amazon Order ID")
+        dgvOrders.Columns.Add("FulfillmentNetwork", "Fulfillment Network")
+        dgvOrders.Columns.Add("Status", "Order Status")
+        dgvOrders.Columns.Add("BuyerName", "Buyer Name")
+        dgvOrders.Columns.Add("PurchaseDate", "Purchase Date")
+        dgvOrders.Columns.Add("DeliveryDate", "DeliveryDate")
+        dgvOrders.Columns.Add("ShippingMethod", "Shipping Method")
+        dgvOrders.Columns.Add("ShippingFirstName", "Shipping First Name")
+        dgvOrders.Columns.Add("ShippingLastName", "Shipping Last Name")
+        dgvOrders.Columns.Add("ShippingAddress1", "Shipping Address 1")
+        dgvOrders.Columns.Add("ShippingAddress2", "Shipping Address 2")
+        dgvOrders.Columns.Add("ShippingCity", "Shipping City")
+        dgvOrders.Columns.Add("ShippingState", "Shipping State")
+        dgvOrders.Columns.Add("ShippingCountry", "Shipping Country")
+        dgvOrders.Columns.Add("ShippingZipCode", "Shipping Zip Code")
+        dgvOrders.Columns.Add("ShippingPhone", "Shipping Phone Number")
+        dgvOrders.Columns.Add("ShippingExtention", "Shipping Extension")
+
+        ' Autosize the columns.
+        For i As Integer = 0 To dgvOrders.ColumnCount - 1
+            dgvOrders.Columns(i).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+        Next
+
+        ' Turn off ReadOnly on the Import column.
+        dgvOrders.ReadOnly = False
+        For Each dgvc As DataGridViewColumn In dgvOrders.Columns
+            dgvc.ReadOnly = True
+        Next
+        dgvOrders.Columns("Import").ReadOnly = False
+
+    End Sub
 
     Private Sub UseRequestToken(tokenUsed As Boolean, Optional rateLimit As Double = 0)
         ' Assign value to rate and tokens from Settings.json if no value was provided.
@@ -358,6 +339,53 @@ Public Class Form1
         Application.DoEvents()
     End Sub
 
+    Private Function GetResponse(client As RestClient, request As IRestRequest, orderID As String) As RestResponse
+        Dim response = New RestResponse
+        Try
+
+            response = client.Execute(request)
+            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
+                'UseRequestToken(False)
+                response = client.Execute(request)
+            End While
+            'UseRequestToken(True, response.Headers.ToList().Find(Function(x) x.Name = "x-amzn-RateLimit-Limit").Value)
+
+            Select Case response.StatusCode
+                Case System.Net.HttpStatusCode.OK
+                    ' Received a 200 response from the Amazon Selling Partner API.
+                    Common.Logging.WriteToLog("INFO", "AMAZON API", "Successfully retrieved buyer information for Amazon order ID " & orderID & ".")
+                Case System.Net.HttpStatusCode.Forbidden
+                    ' Received a 403 response from the Amazon Selling Partner API.
+                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Received a 403 response when trying to retrieve the order's buyer information for Amazon order ID " & orderID & ".")
+                Case Else
+                    ' Received a differing response from those covered above.
+                    Common.Logging.WriteToLog("ERROR", "AMAZON API", "Recieved a bad response code when trying to retrieve the order's buyer information for Amazon order ID " & orderID & "." & response.StatusCode & ": " & response.StatusDescription)
+            End Select
+
+        Catch ex As Exception
+            ' If this is hit switch status to red.
+            Common.Logging.WriteToLog("ERROR", "APPLICATION", "Was unable to connect to the Amazon Selling Partner API while trying to retrieve the order's buyer information for Amazon order ID " & orderID & ". " & ex.Message)
+        End Try
+        Return response
+    End Function
+
+    Private Function GetClient(credentials As Models.SellerApiCredentials, request As IRestRequest) As RestClient
+        Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+
+        credentials = New Models.SellerApiCredentials With {
+                .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
+                .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+                .RefreshToken = settings.Amazon.Credentials.RefreshToken,
+                .AWSKey = settings.Amazon.Credentials.AccessKeyId,
+                .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+                .RoleARN = settings.Amazon.Credentials.RoleArn
+            }
+
+        request = Classes.Signing.SignWithAccessToken(request, credentials.LWA_App_ClientId, credentials.LWA_App_ClientSecret, credentials.RefreshToken)
+        request = Classes.Signing.SignWithSTSKeysAndSecurityTokenn(request, client.BaseUrl.Host, credentials.RoleARN, credentials.AWSKey, credentials.AWSSecret)
+
+        Return client
+    End Function
 
 
 

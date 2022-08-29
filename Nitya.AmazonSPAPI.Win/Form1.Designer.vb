@@ -101,7 +101,7 @@ Partial Class Form1
         '
         Me.cmbMarketplace.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmbMarketplace.FormattingEnabled = True
-        Me.cmbMarketplace.Items.AddRange(New Object() {"All", "Pending Availability", "Pending", "Unshipped", "Partially Shipped", "Shipped", "Invoice Unconfirmed", "Canceled", "Unfulfillable"})
+        Me.cmbMarketplace.Items.AddRange(New Object() {"All"})
         Me.cmbMarketplace.Location = New System.Drawing.Point(113, 81)
         Me.cmbMarketplace.Name = "cmbMarketplace"
         Me.cmbMarketplace.Size = New System.Drawing.Size(200, 21)
