@@ -317,6 +317,62 @@ Public Class Form1
         Cursor = Cursors.Default
     End Sub
 
+
+    Private Sub btnGetOrderItems_Click(sender As Object, e As EventArgs) Handles btnGetOrderItems.Click
+        Dim orderID = ctbGetOrder.Text.Trim()
+        If String.IsNullOrEmpty(orderID) Then
+            MessageBox.Show("Enter a Order Number")
+            Return
+        End If
+
+        Cursor = Cursors.WaitCursor
+        Dim resource = "/orders/v0/orders/" & orderID & "/orderItems"
+        Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+        Dim credentials = New Models.SellerApiCredentials()
+        Dim client As RestClient = GetClient(credentials, request)
+
+        'get the order
+        Dim response = GetResponse(client, request, orderID)
+
+        ' Create the Order items object.
+        Dim orderItems As Common.Models.Amzn.Orders.GetOrderItemsResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderItemsResponse)(response.Content)
+
+        'list order items in gridview
+        If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.Rows.Clear()
+        Else
+            BuildDataGridView()
+        End If
+
+
+        For Each item In orderItems.Payload.OrderItems
+            dgvOrders.Rows.Add(New String() _
+            {False,
+                item.SellerSKU,
+                item.Title,
+                item.ASIN,
+                item.CODFee?.Amount,
+                item.CODFee?.CurrencyCode,
+                item.CODFeeDiscount?.Amount,
+                item.CODFeeDiscount?.CurrencyCode,
+                item.ConditionId,
+                item.ConditionNote,
+                item.ConditionSubtypeId,
+                item.DeemedResellerCategory,
+                item.IossNumber,
+                item.IsGift,
+                item.IsTransparency,
+                item.ItemPrice.Amount,
+                item.ItemPrice.CurrencyCode
+                               })
+
+        Next
+
+
+        Cursor = Cursors.Default
+    End Sub
+
+
 #Region "Private Methods"
     Private Sub BuildDataGridView()
         ' Build the DataGridView.
@@ -462,6 +518,8 @@ Public Class Form1
 
         Return client
     End Function
+
+
 
 
 
