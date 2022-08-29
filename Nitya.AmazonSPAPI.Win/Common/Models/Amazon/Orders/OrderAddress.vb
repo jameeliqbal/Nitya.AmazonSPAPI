@@ -2,7 +2,7 @@
 
     Public Class OrderAddress
         Public Property AmazonOrderId As String
-        Public Property ShippingAddress As Address
+        Public Property ShippingAddress As Address = New Address()
     End Class
 
 End Namespace

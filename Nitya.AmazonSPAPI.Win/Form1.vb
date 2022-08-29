@@ -240,6 +240,82 @@ Public Class Form1
         Cursor = Cursors.Default
     End Sub
 
+    Private Sub btnGetBuyerInfo_Click(sender As Object, e As EventArgs) Handles btnGetBuyerInfo.Click
+        Dim orderID = ctbGetOrder.Text.Trim()
+        If String.IsNullOrEmpty(orderID) Then
+            MessageBox.Show("Enter a Order Number")
+            Return
+        End If
+
+        Cursor = Cursors.WaitCursor
+        Dim resource = "/orders/v0/orders/" & orderID & "/buyerInfo"
+        Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+        Dim credentials = New Models.SellerApiCredentials()
+        Dim client As RestClient = GetClient(credentials, request)
+
+        'get the order
+        Dim response = GetResponse(client, request, orderID)
+
+        ' Create the Order buyer object.
+        Dim buyer As Common.Models.Amzn.Orders.GetOrderBuyerInfoResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderBuyerInfoResponse)(response.Content)
+
+        'list buyer info in gridview
+        If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.Rows.Clear()
+        Else
+            BuildDataGridView()
+        End If
+
+        dgvOrders.Rows.Add(New String() {False, buyer.Payload.AmazonOrderId, Nothing, Nothing, buyer.Payload.BuyerName, Nothing, buyer.Payload.BuyerName, Nothing, buyer.Payload.BuyerCounty, buyer.Payload.BuyerEmail})
+
+        Cursor = Cursors.Default
+    End Sub
+
+
+    Private Sub btnGetAddress_Click(sender As Object, e As EventArgs) Handles btnGetAddress.Click
+        Dim orderID = ctbGetOrder.Text.Trim()
+        If String.IsNullOrEmpty(orderID) Then
+            MessageBox.Show("Enter a Order Number")
+            Return
+        End If
+
+        Cursor = Cursors.WaitCursor
+        Dim resource = "/orders/v0/orders/" & orderID & "/address"
+        Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+        Dim credentials = New Models.SellerApiCredentials()
+        Dim client As RestClient = GetClient(credentials, request)
+
+        'get the order
+        Dim response = GetResponse(client, request, orderID)
+
+        ' Create the Order buyer object.
+        Dim address As Common.Models.Amzn.Orders.GetOrderAddressResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderAddressResponse)(response.Content)
+
+        'list buyer info in gridview
+        If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.Rows.Clear()
+        Else
+            BuildDataGridView()
+        End If
+
+        dgvOrders.Rows.Add(New String() _
+            {False,
+                address.Payload.ShippingAddress.Name,
+                address.Payload.ShippingAddress.AddressLine1,
+                address.Payload.ShippingAddress.AddressLine2,
+                address.Payload.ShippingAddress.AddressLine3,
+                           address.Payload.ShippingAddress.AddressType,
+                           address.Payload.ShippingAddress.City,
+                           address.Payload.ShippingAddress.CountryCode,
+                           address.Payload.ShippingAddress.County,
+                           address.Payload.ShippingAddress.District,
+                           address.Payload.ShippingAddress.Municipality,
+                           address.Payload.ShippingAddress.PostalCode,
+                           address.Payload.ShippingAddress.StateOrRegion
+                           })
+
+        Cursor = Cursors.Default
+    End Sub
 
 #Region "Private Methods"
     Private Sub BuildDataGridView()
@@ -386,6 +462,10 @@ Public Class Form1
 
         Return client
     End Function
+
+
+
+
 
 
 

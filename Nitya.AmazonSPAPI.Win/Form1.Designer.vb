@@ -37,7 +37,13 @@ Partial Class Form1
         Me.dgvOrders = New System.Windows.Forms.DataGridView()
         Me.btnGetOrder = New System.Windows.Forms.Button()
         Me.ctbGetOrder = New System.Windows.Forms.TextBox()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.btnGetBuyerInfo = New System.Windows.Forms.Button()
+        Me.btnGetAddress = New System.Windows.Forms.Button()
+        Me.btnGetOrderItems = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
         CType(Me.dgvOrders, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'lblTokens
@@ -170,33 +176,84 @@ Partial Class Form1
         'btnGetOrder
         '
         Me.btnGetOrder.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnGetOrder.Location = New System.Drawing.Point(419, 52)
+        Me.btnGetOrder.Location = New System.Drawing.Point(6, 30)
         Me.btnGetOrder.Name = "btnGetOrder"
-        Me.btnGetOrder.Size = New System.Drawing.Size(200, 23)
+        Me.btnGetOrder.Size = New System.Drawing.Size(188, 23)
         Me.btnGetOrder.TabIndex = 40
         Me.btnGetOrder.Text = "Get Single Order"
         Me.btnGetOrder.UseVisualStyleBackColor = True
         '
         'ctbGetOrder
         '
-        Me.ctbGetOrder.Location = New System.Drawing.Point(419, 82)
+        Me.ctbGetOrder.Location = New System.Drawing.Point(419, 104)
         Me.ctbGetOrder.Name = "ctbGetOrder"
         Me.ctbGetOrder.Size = New System.Drawing.Size(200, 20)
         Me.ctbGetOrder.TabIndex = 41
+        '
+        'GroupBox1
+        '
+        Me.GroupBox1.Controls.Add(Me.btnGetOrderItems)
+        Me.GroupBox1.Controls.Add(Me.btnGetAddress)
+        Me.GroupBox1.Controls.Add(Me.btnGetOrder)
+        Me.GroupBox1.Controls.Add(Me.btnGetBuyerInfo)
+        Me.GroupBox1.Location = New System.Drawing.Point(419, 125)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(200, 151)
+        Me.GroupBox1.TabIndex = 42
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "Order Info"
+        '
+        'btnGetBuyerInfo
+        '
+        Me.btnGetBuyerInfo.Location = New System.Drawing.Point(6, 61)
+        Me.btnGetBuyerInfo.Name = "btnGetBuyerInfo"
+        Me.btnGetBuyerInfo.Size = New System.Drawing.Size(188, 23)
+        Me.btnGetBuyerInfo.TabIndex = 0
+        Me.btnGetBuyerInfo.Text = "Get Buyer Info"
+        Me.btnGetBuyerInfo.UseVisualStyleBackColor = True
+        '
+        'btnGetAddress
+        '
+        Me.btnGetAddress.Location = New System.Drawing.Point(6, 90)
+        Me.btnGetAddress.Name = "btnGetAddress"
+        Me.btnGetAddress.Size = New System.Drawing.Size(188, 23)
+        Me.btnGetAddress.TabIndex = 0
+        Me.btnGetAddress.Text = "Get Order Address"
+        Me.btnGetAddress.UseVisualStyleBackColor = True
+        '
+        'btnGetOrderItems
+        '
+        Me.btnGetOrderItems.Location = New System.Drawing.Point(6, 119)
+        Me.btnGetOrderItems.Name = "btnGetOrderItems"
+        Me.btnGetOrderItems.Size = New System.Drawing.Size(188, 23)
+        Me.btnGetOrderItems.TabIndex = 0
+        Me.btnGetOrderItems.Text = "Get Order Items"
+        Me.btnGetOrderItems.UseVisualStyleBackColor = True
+        '
+        'Label1
+        '
+        Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(416, 89)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(73, 13)
+        Me.Label1.TabIndex = 32
+        Me.Label1.Text = "Order Number"
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1244, 669)
+        Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.ctbGetOrder)
-        Me.Controls.Add(Me.btnGetOrder)
         Me.Controls.Add(Me.dgvOrders)
         Me.Controls.Add(Me.lblTokens)
         Me.Controls.Add(Me.lblFilteredOrders)
         Me.Controls.Add(Me.lblOrders)
         Me.Controls.Add(Me.lblStatus)
         Me.Controls.Add(Me.cmbOrderStatus)
+        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.lblMarketplace)
         Me.Controls.Add(Me.cmbMarketplace)
         Me.Controls.Add(Me.btnGetOrders)
@@ -207,6 +264,7 @@ Partial Class Form1
         Me.Name = "Form1"
         Me.Text = "Form1"
         CType(Me.dgvOrders, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox1.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -227,4 +285,9 @@ Partial Class Form1
     Friend WithEvents dgvOrders As DataGridView
     Friend WithEvents btnGetOrder As Button
     Friend WithEvents ctbGetOrder As TextBox
+    Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents btnGetOrderItems As Button
+    Friend WithEvents btnGetAddress As Button
+    Friend WithEvents btnGetBuyerInfo As Button
+    Friend WithEvents Label1 As Label
 End Class
