@@ -67,9 +67,11 @@
       <HintPath>..\packages\RestSharp.106.15.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -132,6 +134,11 @@
     <Compile Include="Common\Models\Amazon\Sellers\GetMarketplaceParticipationsResponse.vb" />
     <Compile Include="Common\Models\Amazon\Sellers\MarketplaceParticipation.vb" />
     <Compile Include="Common\Models\Amazon\Sellers\SellerParticipation.vb" />
+    <Compile Include="Common\Models\Amazon\Shipping\Error.vb" />
+    <Compile Include="Common\Models\Amazon\Shipping\Event.vb" />
+    <Compile Include="Common\Models\Amazon\Shipping\GetTrackingInformationResponse.vb" />
+    <Compile Include="Common\Models\Amazon\Shipping\Location.vb" />
+    <Compile Include="Common\Models\Amazon\Shipping\TrackingInformation.vb" />
     <Compile Include="Common\Models\Settings.vb" />
     <Compile Include="Common\Strings.vb" />
     <Compile Include="Form1.vb">
@@ -180,6 +187,11 @@
     </None>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

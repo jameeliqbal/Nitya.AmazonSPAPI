@@ -1,0 +1,31 @@
+{
+  "Amazon": {
+    "Credentials": {
+      "LwaClientIdentifier": "amzn1.application-oa2-client.5d8bb31864594315b9c0450b607d4a15",
+      "LwaClientSecret": "ycLqhfZhcZtUwzDGQgXGlUAoKszGJ97EixDqklBZUtBTmrEq3qIGQBGvnKwfCM8gZRFHEbJ1pVFYJyZtnQtrWFrC2xwbN9DjqAWGULwfEyWbrPeT+FTtmUk7Wc4G0mXX1SE61houOgZNYUL8h1WIc0VqUcqkiTGzJQwVfl1ETkyDlExgE3ukjsjWrig2CzcN",
+      "RefreshToken": "Atzr|IwEBID9ez3ARNMg5BVzuW0ygrZmtQJEstt1t8p-e1-BHt2_4vu95Fk1xHWfHTqi3pMu6nsFUIr6pDQ_yH6SPE2HNZtyTumGW3dqTtGA9HRCs1YaLDJ5J6GSIhAKWYGV6iTVgbgM5devw759BmtAOOYCsmHJSovRQKDg6LUblwpYr9bLN7Lv1NfiFN2WdeuEUVvme3i0qkE5t_xYtQV5uqbzfr3K5L0o9v1daaf95Jee94FWaFVirDxYTXBRPu6VEedofpIXHWspxI0FKEv2oiaNA3gR05u-zzhbxPanIvR-rQToHATg5geTZPIXu11ip1o0Hmbc",
+      "MarketplaceId": null,
+      "AccessKeyId": "AKIATP3MZBCARA3ENJFH",
+      "SecretAccessKey": "rpdWgRg7OkSa2VjAyWuw23xmes7plwsmFOfsKFzhN05A3Cwoq9gCFCY/nq487gAzdzZE4UAWW5k1TBQPrezlpBuOcyUUU19U1J0HE0C9ybY4lItVz1cfXEkLc4GFXjpt",
+      "RoleArn": "arn:aws:iam::240209430657:role/spapirole"
+    },
+    "Marketplaces": [
+      {
+        "Name": "Amazon.com",
+        "MarketplaceId": "ATVPDKIKX0DER",
+        "UsingAfn": true,
+        "UsingMfn": true,
+        "Currency": "USD",
+        "ConversionRate": 1.00,
+        "ConversionRateUpdated": "8/31/2021 1:28:19 PM"
+      }
+    ]
+  },
+  "Application": {
+    "Logging": {
+      "Enabled": true,
+      "RotateLogs": true,
+      "DaysToKeep": 7.0
+    }
+  }
+}

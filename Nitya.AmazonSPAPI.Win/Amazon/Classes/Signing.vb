@@ -21,20 +21,22 @@ Namespace Classes
 
         Public Shared Function SignWithSTSKeysAndSecurityTokenn(ByVal restRequest As IRestRequest, ByVal host As String, ByVal roleARN As String, ByVal accessKey As String, ByVal secretKey As String) As IRestRequest
             Dim response1 As AssumeRoleResponse = Nothing
-
-            Using STSClient = New AmazonSecurityTokenServiceClient(accessKey, secretKey, RegionEndpoint.USEast1)
+            Dim policy As String = "{""Version"":""2012-10-17"",""Statement"":[{""Sid"":""Stmt1"",""Effect"":""Allow"",""Action"":""s3:*"",""Resource"":""*""}]}"
+            Using STSClient = New AmazonSecurityTokenServiceClient(accessKey, secretKey, RegionEndpoint.EUWest1)
                 Dim req = New AssumeRoleRequest() With {
+                    .Policy = policy,
                     .RoleArn = roleARN,
                     .DurationSeconds = 950,
                     .RoleSessionName = Guid.NewGuid().ToString()
                 }
+
                 response1 = STSClient.AssumeRoleAsync(req, New CancellationToken()).Result
             End Using
 
             Dim awsAuthenticationCredentials = New AWSAuthenticationCredentials With {
                 .AccessKeyId = response1.Credentials.AccessKeyId,
                 .SecretKey = response1.Credentials.SecretAccessKey,
-                .Region = "us-east-1"
+                .Region = "eu-west-1"
             }
             restRequest.AddHeader("x-amz-security-token", response1.Credentials.SessionToken)
             Return New AWSSigV4Signer(awsAuthenticationCredentials).Sign(restRequest, host)

@@ -40,6 +40,20 @@ Public Class Form1
         ' Create the Order object.
         Dim order As Common.Models.Amzn.Orders.GetOrderResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderResponse)(response.Content)
 
+        ' If no orders were returned tell the user and exit this Sub.
+        If order.Payload.AmazonOrderId Is Nothing Then
+            dgvOrders.Rows.Clear()
+            dgvOrders.ColumnHeadersVisible = False
+            dgvOrders.Columns.Add("Message", "Message")
+            dgvOrders.Columns("Message").ValueType = GetType(String)
+            dgvOrders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+            dgvOrders.Columns("Message").DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+            dgvOrders.Rows.Add("No orders returned...")
+            'dgvOrders.ClearSelection()
+            Cursor = Cursors.Default
+            Return
+        End If
+
         'list order in gridview
         If dgvOrders.Columns.Count > 0 Then
             dgvOrders.Rows.Clear()
@@ -97,17 +111,27 @@ Public Class Form1
         request.AddParameter("OrderStatuses", status, ParameterType.QueryString)
         request.AddParameter("FulfillmentChannels", channels, ParameterType.QueryString)
 
-        Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+        'Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+
+        Dim client As RestClient = New RestClient("https://sellingpartnerapi-eu.amazon.com")
 
         Dim credentials As New Models.SellerApiCredentials With {
             .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
-            .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+            .LWA_App_ClientSecret = settings.Amazon.Credentials.LwaClientSecret,
             .RefreshToken = settings.Amazon.Credentials.RefreshToken,
             .AWSKey = settings.Amazon.Credentials.AccessKeyId,
-            .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+            .AWSSecret = settings.Amazon.Credentials.SecretAccessKey,
             .RoleARN = settings.Amazon.Credentials.RoleArn
         }
 
+        'Dim credentials As New Models.SellerApiCredentials With {
+        '    .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
+        '    .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+        '    .RefreshToken = settings.Amazon.Credentials.RefreshToken,
+        '    .AWSKey = settings.Amazon.Credentials.AccessKeyId,
+        '    .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+        '    .RoleARN = settings.Amazon.Credentials.RoleArn
+        '}
         request = Classes.Signing.SignWithAccessToken(request, credentials.LWA_App_ClientId, credentials.LWA_App_ClientSecret, credentials.RefreshToken)
         request = Classes.Signing.SignWithSTSKeysAndSecurityTokenn(request, client.BaseUrl.Host, credentials.RoleARN, credentials.AWSKey, credentials.AWSSecret)
 
@@ -372,6 +396,62 @@ Public Class Form1
         Cursor = Cursors.Default
     End Sub
 
+    Private Sub btnGetTrackingInfo_Click(sender As Object, e As EventArgs) Handles btnGetTrackingInfo.Click
+        Dim trackingID = txtTrackingID.Text.Trim()
+        Dim carrierID = txtcarrierID.Text.Trim()
+
+        If String.IsNullOrEmpty(carrierID) Then
+            MessageBox.Show("Enter a Carrier ID")
+            Return
+        End If
+
+        If String.IsNullOrEmpty(trackingID) Then
+            MessageBox.Show("Enter a Tracking ID")
+            Return
+        End If
+
+        Cursor = Cursors.WaitCursor
+        Dim resource = $"/shipping/v2/tracking/"
+        Dim request As IRestRequest = New RestRequest(resource, Method.GET)
+
+        request.AddQueryParameter("carrierId", carrierID)
+        request.AddQueryParameter("trackingId", trackingID)
+        'request.AddHeader("x-amzn-shipping-business-id", "AmazonShipping_IN")
+
+        Dim credentials = New Models.SellerApiCredentials()
+        Dim client As RestClient = GetClient(credentials, request)
+        'get the tracking info
+        Dim response = GetResponse(client, request, trackingID)
+
+        ' Create the tracking info object.
+        Dim trackingInfo As Common.Models.Amzn.Shipping.GetTrackingInformationResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Shipping.GetTrackingInformationResponse)(response.Content)
+
+        'list tracking items in gridview
+        If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.Rows.Clear()
+        Else
+            BuildDataGridView()
+        End If
+
+
+        For Each item In trackingInfo.Payload.EventHistory.Events
+            dgvOrders.Rows.Add(New String() _
+            {False,
+            trackingInfo.Payload.TrackingId(),
+            trackingInfo.Payload.PromisedDeliveryDate,
+            trackingInfo.Payload.Summary.Status,
+                item.EventCode,
+                item.EventTime,
+                item.Location.City,
+                item.Location.PostalCode,
+                item.Location.StateOrRegion
+                               })
+
+        Next
+
+
+        Cursor = Cursors.Default
+    End Sub
 
 #Region "Private Methods"
     Private Sub BuildDataGridView()
@@ -502,14 +582,25 @@ Public Class Form1
     End Function
 
     Private Function GetClient(credentials As Models.SellerApiCredentials, request As IRestRequest) As RestClient
-        Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+        'Dim client As RestClient = New RestClient("https://sellingpartnerapi-na.amazon.com")
+
+        Dim client As RestClient = New RestClient("https://sellingpartnerapi-eu.amazon.com")
+
+        'credentials = New Models.SellerApiCredentials With {
+        '        .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
+        '        .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+        '        .RefreshToken = settings.Amazon.Credentials.RefreshToken,
+        '        .AWSKey = settings.Amazon.Credentials.AccessKeyId,
+        '        .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+        '        .RoleARN = settings.Amazon.Credentials.RoleArn
+        '    }
 
         credentials = New Models.SellerApiCredentials With {
                 .LWA_App_ClientId = settings.Amazon.Credentials.LwaClientIdentifier,
-                .LWA_App_ClientSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.LwaClientSecret),
+                .LWA_App_ClientSecret = settings.Amazon.Credentials.LwaClientSecret,
                 .RefreshToken = settings.Amazon.Credentials.RefreshToken,
                 .AWSKey = settings.Amazon.Credentials.AccessKeyId,
-                .AWSSecret = Common.Encryption.DecryptString(settings.Amazon.Credentials.SecretAccessKey),
+                .AWSSecret = settings.Amazon.Credentials.SecretAccessKey,
                 .RoleARN = settings.Amazon.Credentials.RoleArn
             }
 
@@ -518,6 +609,8 @@ Public Class Form1
 
         Return client
     End Function
+
+
 
 
 

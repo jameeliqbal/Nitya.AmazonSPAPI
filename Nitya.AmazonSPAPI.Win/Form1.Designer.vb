@@ -42,6 +42,11 @@ Partial Class Form1
         Me.btnGetAddress = New System.Windows.Forms.Button()
         Me.btnGetOrderItems = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.txtcarrierID = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.txtTrackingID = New System.Windows.Forms.TextBox()
+        Me.btnGetTrackingInfo = New System.Windows.Forms.Button()
         CType(Me.dgvOrders, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
@@ -240,18 +245,66 @@ Partial Class Form1
         Me.Label1.TabIndex = 32
         Me.Label1.Text = "Order Number"
         '
+        'Label2
+        '
+        Me.Label2.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(660, 89)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(50, 13)
+        Me.Label2.TabIndex = 32
+        Me.Label2.Text = "carrier ID"
+        '
+        'txtcarrierID
+        '
+        Me.txtcarrierID.Location = New System.Drawing.Point(663, 104)
+        Me.txtcarrierID.Name = "txtcarrierID"
+        Me.txtcarrierID.Size = New System.Drawing.Size(200, 20)
+        Me.txtcarrierID.TabIndex = 41
+        '
+        'Label3
+        '
+        Me.Label3.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(660, 140)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(63, 13)
+        Me.Label3.TabIndex = 32
+        Me.Label3.Text = "Tracking ID"
+        '
+        'txtTrackingID
+        '
+        Me.txtTrackingID.Location = New System.Drawing.Point(663, 155)
+        Me.txtTrackingID.Name = "txtTrackingID"
+        Me.txtTrackingID.Size = New System.Drawing.Size(200, 20)
+        Me.txtTrackingID.TabIndex = 41
+        '
+        'btnGetTrackingInfo
+        '
+        Me.btnGetTrackingInfo.Location = New System.Drawing.Point(663, 186)
+        Me.btnGetTrackingInfo.Name = "btnGetTrackingInfo"
+        Me.btnGetTrackingInfo.Size = New System.Drawing.Size(200, 23)
+        Me.btnGetTrackingInfo.TabIndex = 43
+        Me.btnGetTrackingInfo.Text = "GetTrackingInfo"
+        Me.btnGetTrackingInfo.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1244, 669)
+        Me.Controls.Add(Me.btnGetTrackingInfo)
         Me.Controls.Add(Me.GroupBox1)
+        Me.Controls.Add(Me.txtTrackingID)
+        Me.Controls.Add(Me.txtcarrierID)
         Me.Controls.Add(Me.ctbGetOrder)
         Me.Controls.Add(Me.dgvOrders)
         Me.Controls.Add(Me.lblTokens)
         Me.Controls.Add(Me.lblFilteredOrders)
         Me.Controls.Add(Me.lblOrders)
+        Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.lblStatus)
+        Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.cmbOrderStatus)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.lblMarketplace)
@@ -290,4 +343,9 @@ Partial Class Form1
     Friend WithEvents btnGetAddress As Button
     Friend WithEvents btnGetBuyerInfo As Button
     Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents txtcarrierID As TextBox
+    Friend WithEvents Label3 As Label
+    Friend WithEvents txtTrackingID As TextBox
+    Friend WithEvents btnGetTrackingInfo As Button
 End Class
