@@ -1,12 +1,10 @@
 {
   "Amazon": {
     "Credentials": {
-      //"amzn1.application-oa2-client.8bae9facde45464fb4665ab6460c4760": null,
-      //"de24b0a3f1ac72c3be67191c85ed00e8189061b6b43f54b698b12f74406ccf3a": null,
       "LwaClientIdentifier": "amzn1.application-oa2-client.8bae9facde45464fb4665ab6460c4760",
       "LwaClientSecret": "de24b0a3f1ac72c3be67191c85ed00e8189061b6b43f54b698b12f74406ccf3a",
-      "RefreshToken": "Atzr|IwEBIMnLcyNzzICnYV0EeZikWVffGb6VvEknF8ENXR7OBKqQLA5Bgh1TYZPYSxjVzhn5wTnqpCrWUJt2-L6G3AwtFBmTMxxRCWuWr9L8clILqSXZEKa2ZXYGVAfGvgVlBxavYck-UgDO2c5kkEy39VhjmfqZGVzaC7In4hAVxqnIZLMAPBluLeZtym36dcSBK80_Q99M38H1DQv_agQ4u4fCEPsJn3_IhayAAh9af2-MwrOrFJfBlsAHe4H5aI6tKioIBX3vsjyj8DZcQcaVLSBXSZWoFLgZGxe_wLrl24l5h65ZLj6fH8R6GXFtzGpKK00-YlsHuMMWUm4T2U-oduvcgCdC",
-      "MarketplaceId": "A21TJRUUN4KGV",
+      "RefreshToken": "Atzr|IwEBID8CIh2epqQB5ULVWqLhE_zHNDRynrELw14-5Zh2__bQ0C63od9qX5ScNeIFdG3X85Av-ESuwALCSI4EBc9FFIY_90qEsV5C2jOUQYlQAQk83cADHarB6afbNfq-DFNKtanYWApXZNNyatXjKH1TiFont1K0LX3h8QUh3kORbrxphZl7RtcRzMdErQNQzriIVVuouXEdNjK_ZmQS61-NrTTUUJIGA-8pOSKXJxOnntOdZenuIiwynLirPFqF_AzB9jnSBETxd0WDXBe6Q7V4VR1x038HLgsgNLRg1nt0AkUAWoyiuw5V0yl8yie_qnN_ZCQsIK0jp3vwPvX6GxZlF95r",
+      "MarketplaceId": null,
       "AccessKeyId": "AKIA5ZFSODMIQCYFD6G7",
       "SecretAccessKey": "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",
       "RoleArn": "arn:aws:iam::947414506257:role/SellerApiAccess"

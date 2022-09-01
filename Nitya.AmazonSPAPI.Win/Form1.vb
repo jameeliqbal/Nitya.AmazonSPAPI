@@ -56,6 +56,8 @@ Public Class Form1
 
         'list order in gridview
         If dgvOrders.Columns.Count > 0 Then
+            dgvOrders.ColumnHeadersVisible = True
+
             dgvOrders.Rows.Clear()
         Else
             BuildDataGridView()
@@ -411,18 +413,20 @@ Public Class Form1
         End If
 
         Cursor = Cursors.WaitCursor
-        Dim resource = $"/shipping/v2/tracking/"
+        Dim resource = $"/shipping/v2/tracking"
         Dim request As IRestRequest = New RestRequest(resource, Method.GET)
 
         request.AddQueryParameter("carrierId", carrierID)
         request.AddQueryParameter("trackingId", trackingID)
-        'request.AddHeader("x-amzn-shipping-business-id", "AmazonShipping_IN")
+        'request.AddParameter("x-amzn-shipping-business-id", "AmazonShipping_IN", ParameterType.HttpHeader)
 
         Dim credentials = New Models.SellerApiCredentials()
         Dim client As RestClient = GetClient(credentials, request)
+
+        'get rdt token
+        request = Classes.Signing.SignWithRDT(request)
         'get the tracking info
         Dim response = GetResponse(client, request, trackingID)
-
         ' Create the tracking info object.
         Dim trackingInfo As Common.Models.Amzn.Shipping.GetTrackingInformationResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Shipping.GetTrackingInformationResponse)(response.Content)
 
