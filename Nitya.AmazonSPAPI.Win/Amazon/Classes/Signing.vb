@@ -21,10 +21,10 @@ Namespace Classes
 
         Public Shared Function SignWithSTSKeysAndSecurityTokenn(ByVal restRequest As IRestRequest, ByVal host As String, ByVal roleARN As String, ByVal accessKey As String, ByVal secretKey As String) As IRestRequest
             Dim response1 As AssumeRoleResponse = Nothing
-            'Dim policy As String = Nothing ' "{""Version"":""2012-10-17"",""Statement"":[{""Sid"":""Stmt1"",""Effect"":""Allow"",""Action"":""s3:*"",""Resource"":""*""}]}"
+            Dim policy As String = "{""Version"": ""2012-10-17"",""Statement"": [{""Effect"": ""Allow"",""Action"": ""execute-api:Invoke"",""Resource"": ""arn:aws:execute-api:::*""}]}"
             Using STSClient = New AmazonSecurityTokenServiceClient(accessKey, secretKey, RegionEndpoint.EUWest1)
-                '.Policy = policy,
                 Dim req = New AssumeRoleRequest() With {
+                .Policy = policy,
                 .RoleArn = roleARN,
                     .DurationSeconds = 950,
                     .RoleSessionName = Guid.NewGuid().ToString()
@@ -42,17 +42,19 @@ Namespace Classes
             Return New AWSSigV4Signer(awsAuthenticationCredentials).Sign(restRequest, host)
         End Function
         Public Shared Function SignWithRDT(ByVal restRequest As IRestRequest) As IRestRequest
-            Dim client = New RestClient("https://sellingpartnerapi-eu.amazon.com")
+            Dim client = New RestClient("https: //sellingpartnerapi-eu.amazon.com")
             Dim rdtRequest = New RestRequest("/tokens/2021-03-01/restrictedDataToken", Method.POST, DataFormat.Json)
             rdtRequest.AddParameter("x-amz-access-token", restRequest.Parameters.SingleOrDefault(Function(p) p.Name = "x-amz-access-token").Value)
             'rdtRequest.AddParameter("x-amz-content-sha256", restRequest.Parameters.SingleOrDefault(Function(p) p.Name = "x-amz-content-sha256").Value)
             rdtRequest.AddParameter("x-amz-security-token", restRequest.Parameters.SingleOrDefault(Function(p) p.Name = "x-amz-security-token").Value)
             rdtRequest.AddParameter("X-Amz-Date", restRequest.Parameters.SingleOrDefault(Function(p) p.Name = "X-Amz-Date").Value)
             rdtRequest.AddParameter("Authorization", restRequest.Parameters.SingleOrDefault(Function(p) p.Name = "Authorization").Value)
-            Dim restrictedResources As Object = New Object()
-            restrictedResources.method = "Get"
-            restrictedResources.path = "/tracking/a"
-            'Dim requestBody = "{"restrictedResources": {"method": "Get", "path": "/tracking/a"}}"
+            'Dim restrictedResources As Object = New Object()
+            'restrictedResources.method = "Get"
+            'restrictedResources.path = "/tracking/a"
+
+            Dim restrictedResources = New With {Key .method = "Get", .path = "/tracking/a"}
+            'Dim requestBody = New {"restrictedResources": {"method": "Get", "path": "/tracking/a"}}
             rdtRequest.AddBody(restrictedResources)
             Dim response = New RestResponse
             Try

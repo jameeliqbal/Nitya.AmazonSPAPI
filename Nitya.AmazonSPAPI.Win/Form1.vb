@@ -423,8 +423,9 @@ Public Class Form1
         Dim credentials = New Models.SellerApiCredentials()
         Dim client As RestClient = GetClient(credentials, request)
 
-        'get rdt token
-        request = Classes.Signing.SignWithRDT(request)
+        ''get rdt token
+        'request = Classes.Signing.SignWithRDT(request)
+
         'get the tracking info
         Dim response = GetResponse(client, request, trackingID)
         ' Create the tracking info object.
