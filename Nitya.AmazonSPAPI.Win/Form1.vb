@@ -36,7 +36,16 @@ Public Class Form1
 
         'get the order
         Dim response = GetResponse(client, request, orderID)
+        If Not response.IsSuccessful Then
+            Cursor = Cursors.Default
+            Dim errorMessage = "Error while getting order details" + Environment.NewLine + Environment.NewLine
+            Dim responseData As Object = JsonConvert.DeserializeObject(response.Content)
+            Dim errors = responseData.errors
 
+            errorMessage += errors(0).Message + Environment.NewLine+errors(0).code
+            MessageBox.Show(errorMessage, "ERROR")
+            Return
+        End If
         ' Create the Order object.
         Dim order As Common.Models.Amzn.Orders.GetOrderResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderResponse)(response.Content)
 
@@ -55,7 +64,7 @@ Public Class Form1
         End If
 
         'list order in gridview
-        If dgvOrders.Columns.Count > 0 Then
+        If dgvOrders.Columns.Count > 1 Then
             dgvOrders.ColumnHeadersVisible = True
 
             dgvOrders.Rows.Clear()
@@ -140,7 +149,9 @@ Public Class Form1
         Dim response As New RestResponse
         Try
             response = client.Execute(request)
-            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
+            Dim attempts = 0
+            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0 And attempts <= 3
+                attempts = attempts + 1
                 'UseRequestToken(False)
                 response = client.Execute(request)
             End While
@@ -167,7 +178,9 @@ Public Class Form1
         ' Create the Orders object.
         Dim orders As Common.Models.Amzn.Orders.GetOrdersResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrdersResponse)(response.Content)
         Dim filteredOrders = orders
-
+        If Not response.StatusCode = Net.HttpStatusCode.OK Then
+            Return
+        End If
         lblOrders.Text = "Orders: " & orders.Payload.Orders.Count
         lblFilteredOrders.Text = "Filtered Orders: 0"
         Application.DoEvents()
@@ -200,6 +213,7 @@ Public Class Form1
             dgvOrders.Columns("Message").DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
             dgvOrders.Rows.Add("No orders returned...")
             dgvOrders.ClearSelection()
+            Cursor = Cursors.Default
             Return
         End If
 
@@ -284,9 +298,16 @@ Public Class Form1
 
         ' Create the Order buyer object.
         Dim buyer As Common.Models.Amzn.Orders.GetOrderBuyerInfoResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderBuyerInfoResponse)(response.Content)
+        If buyer.Errors IsNot Nothing Then
+            Cursor = Cursors.Default
+            client = Nothing
+            Dim errorMessage = buyer.Errors(0).message + Environment.NewLine + buyer.Errors(0).code
+            MessageBox.Show(errorMessage, "ERROR")
+            Return
+        End If
 
         'list buyer info in gridview
-        If dgvOrders.Columns.Count > 0 Then
+        If dgvOrders.Columns.Count > 1 Then
             dgvOrders.Rows.Clear()
         Else
             BuildDataGridView()
@@ -316,9 +337,16 @@ Public Class Form1
 
         ' Create the Order buyer object.
         Dim address As Common.Models.Amzn.Orders.GetOrderAddressResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderAddressResponse)(response.Content)
+        If address.Errors IsNot Nothing Then
+            Cursor = Cursors.Default
+            client = Nothing
+            Dim errorMessage = address.Errors(0).message + Environment.NewLine + address.Errors(0).code
+            MessageBox.Show(errorMessage, "ERROR")
+            Return
+        End If
 
         'list buyer info in gridview
-        If dgvOrders.Columns.Count > 0 Then
+        If dgvOrders.Columns.Count > 1 Then
             dgvOrders.Rows.Clear()
         Else
             BuildDataGridView()
@@ -359,12 +387,23 @@ Public Class Form1
 
         'get the order
         Dim response = GetResponse(client, request, orderID)
-
+        If response Is Nothing Then
+            Cursor = Cursors.Default
+            client = Nothing
+            Return
+        End If
         ' Create the Order items object.
         Dim orderItems As Common.Models.Amzn.Orders.GetOrderItemsResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Orders.GetOrderItemsResponse)(response.Content)
+        If orderItems.Errors IsNot Nothing Then
+            Cursor = Cursors.Default
+            client = Nothing
+            Dim errorMessage = orderItems.Errors(0).message + Environment.NewLine + orderItems.Errors(0).code
+            MessageBox.Show(errorMessage, "ERROR")
+            Return
+        End If
 
         'list order items in gridview
-        If dgvOrders.Columns.Count > 0 Then
+        If dgvOrders.Columns.Count > 1 Then
             dgvOrders.Rows.Clear()
         Else
             BuildDataGridView()
@@ -413,7 +452,8 @@ Public Class Form1
         End If
 
         Cursor = Cursors.WaitCursor
-        Dim resource = $"/shipping/v2/tracking"
+        'Dim resource = $"/shipping/v2/tracking"
+        Dim resource = $"/fba/outbound/v0/tracking"
         Dim request As IRestRequest = New RestRequest(resource, Method.GET)
 
         request.AddQueryParameter("carrierId", carrierID)
@@ -428,11 +468,20 @@ Public Class Form1
 
         'get the tracking info
         Dim response = GetResponse(client, request, trackingID)
+
+
         ' Create the tracking info object.
         Dim trackingInfo As Common.Models.Amzn.Shipping.GetTrackingInformationResponse = JsonConvert.DeserializeObject(Of Common.Models.Amzn.Shipping.GetTrackingInformationResponse)(response.Content)
+        If trackingInfo.Errors IsNot Nothing Then
+            Cursor = Cursors.Default
+            client = Nothing
+            Dim errorMessage = trackingInfo.Errors(0).message + Environment.NewLine + trackingInfo.Errors(0).code
+            MessageBox.Show(errorMessage, "ERROR")
+            Return
+        End If
 
         'list tracking items in gridview
-        If dgvOrders.Columns.Count > 0 Then
+        If dgvOrders.Columns.Count > 1 Then
             dgvOrders.Rows.Clear()
         Else
             BuildDataGridView()
@@ -465,6 +514,7 @@ Public Class Form1
         chk.Name = "Import"
         chk.HeaderText = "Import"
 
+        dgvOrders.Columns.Clear()
         dgvOrders.Columns.Add(chk)
         dgvOrders.Columns.Add("AmazonOrderId", "Amazon Order ID")
         dgvOrders.Columns.Add("FulfillmentNetwork", "Fulfillment Network")
@@ -561,7 +611,9 @@ Public Class Form1
         Try
 
             response = client.Execute(request)
-            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0
+            Dim attempts = 0
+            While response.Headers.Where(Function(x) x.Name = "x-amzn-ErrorType").Count() > 0 And attempts <= 3
+                attempts = attempts + 1
                 'UseRequestToken(False)
                 response = client.Execute(request)
             End While
