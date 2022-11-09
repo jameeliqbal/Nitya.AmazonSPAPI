@@ -21,10 +21,10 @@ Namespace Classes
 
         Public Shared Function SignWithSTSKeysAndSecurityTokenn(ByVal restRequest As IRestRequest, ByVal host As String, ByVal roleARN As String, ByVal accessKey As String, ByVal secretKey As String) As IRestRequest
             Dim response1 As AssumeRoleResponse = Nothing
-            Dim policy As String = "{""Version"": ""2012-10-17"",""Statement"": [{""Effect"": ""Allow"",""Action"": ""execute-api:Invoke"",""Resource"": ""arn:aws:execute-api:::*""}]}"
+            'Dim policy As String = "{""Version"": ""2012-10-17"",""Statement"": [{""Effect"": ""Allow"",""Action"": ""execute-api:Invoke"",""Resource"": ""arn:aws:execute-api:::*""}]}"
+            '.Policy = policy,
             Using STSClient = New AmazonSecurityTokenServiceClient(accessKey, secretKey, RegionEndpoint.EUWest1)
                 Dim req = New AssumeRoleRequest() With {
-                .Policy = policy,
                 .RoleArn = roleARN,
                     .DurationSeconds = 950,
                     .RoleSessionName = Guid.NewGuid().ToString()
